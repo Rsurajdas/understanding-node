@@ -1,9 +1,19 @@
 export class EventEmitter {
   listeners = {}; // key-value pair
+  maxListeners = 10;
 
   addListener(eventName, fn) {
     this.listeners[eventName] = this.listeners[eventName] || [];
-    this.listeners[eventName].push(fn);
+    const len = this.listenerCount(eventName);
+    if (len >= this.maxListeners) {
+      throw new Error(
+        `Warning: Possible EventEmitter memory leak detected. ${
+          len + 1
+        } ${eventName} listeners added. Use emitter.setMaxListeners() to increase limit`
+      );
+    } else {
+      this.listeners[eventName].push(fn);
+    }
     return this;
   }
   on(eventName, fn) {
@@ -48,5 +58,13 @@ export class EventEmitter {
 
   rawListeners(eventName) {
     return this.listeners[eventName] || [];
+  }
+
+  eventNames() {
+    return Object.keys(this.listeners);
+  }
+
+  setMaxListeners(n) {
+    this.maxListeners = n;
   }
 }
