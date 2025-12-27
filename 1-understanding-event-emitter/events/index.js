@@ -1,4 +1,4 @@
-class EventEmitter {
+export class EventEmitter {
   listeners = {}; // key-value pair
 
   addListener(eventName, fn) {
@@ -31,10 +31,12 @@ class EventEmitter {
   }
 
   emit(eventName, ...args) {
-    const lis = this.listeners[eventName];
-    if (!lis) return false;
-    lis.forEach((fn) => {
-      fn(...args);
+    const fns = this.listeners[eventName];
+    if (!fns) return false;
+    fns.forEach((fn) => {
+      if (typeof fn === "function") {
+        fn(...args);
+      }
     });
     return true;
   }
